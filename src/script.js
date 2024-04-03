@@ -35,18 +35,25 @@ function renderRelatedSearchTerms(keyword) {
     '.related-search-term a {color: #333;text-decoration: none;font-weight: bold;}';
   document.getElementsByTagName('head')[0].appendChild(style);
 
+  const relatedSearchTermsContainer = document.getElementById(
+    'related-search-terms'
+  );
+
+  const supplierId = relatedSearchTermsContainer.getAttribute(
+    'data-supplier-id'
+  );
   // Make a GET request to the backend
   fetch(
-    `http://127.0.0.1:3000/?keyword=${encodeURIComponent(keyword)}`
+    `https://getrelatedkeywords-5nrwkperqa-uc.a.run.app/?keyword=${encodeURIComponent(
+      keyword
+    )}&supplier=${encodeURIComponent(supplierId)}`
   )
     .then((response) => response.json())
     .then((data) => {
-      const relatedSearchTermsContainer = document.getElementById(
-        'related-search-terms'
-      );
       // Clear any previous content
       relatedSearchTermsContainer.innerHTML = '';
       // Render each related search term as a link
+      console.log(data);
       data.forEach((item) => {
         const termContainer = document.createElement('div');
         termContainer.classList.add('related-search-term');
@@ -57,6 +64,10 @@ function renderRelatedSearchTerms(keyword) {
 
         termContainer.appendChild(link);
         relatedSearchTermsContainer.appendChild(termContainer);
+        termContainer.addEventListener('click', function () {
+          // Trigger click event on link
+          link.click();
+        });
       });
     })
     .catch((error) =>
@@ -66,11 +77,16 @@ function renderRelatedSearchTerms(keyword) {
 
 // Usage: Call this function passing the keyword
 // For example: renderRelatedSearchTerms("your search term");
-// This function can be called onload, on click, or any other event based on your requirement
 
-// Example usage:
 document.addEventListener('DOMContentLoaded', function () {
-  renderRelatedSearchTerms('your search term');
+  const relatedSearchTermsElement = document.getElementById(
+    'related-search-terms'
+  );
+  if (relatedSearchTermsElement) {
+    const keyword =
+      relatedSearchTermsElement.getAttribute('data-keyword');
+    renderRelatedSearchTerms(keyword);
+  }
 });
 
 // Alternatively, developers can call renderRelatedSearchTerms(keyword) from their own scripts
